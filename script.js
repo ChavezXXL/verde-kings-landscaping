@@ -64,43 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // === Animated Counters ===
-    const counters = document.querySelectorAll('.stat-number');
-    let counterAnimated = false;
-
-    function easeOutExpo(t) {
-        return t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
-    }
-
-    function animateCounters() {
-        counters.forEach(counter => {
-            const target = parseInt(counter.getAttribute('data-target'));
-            const duration = 2500;
-            const startTime = performance.now();
-
-            const update = (currentTime) => {
-                const elapsed = currentTime - startTime;
-                const progress = Math.min(elapsed / duration, 1);
-                const eased = easeOutExpo(progress);
-                counter.textContent = Math.floor(eased * target);
-                if (progress < 1) requestAnimationFrame(update);
-                else counter.textContent = target;
-            };
-            requestAnimationFrame(update);
-        });
-    }
-
-    const statsObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting && !counterAnimated) {
-                counterAnimated = true;
-                animateCounters();
-            }
-        });
-    }, { threshold: 0.5 });
-
-    const heroStats = document.querySelector('.hero-stats');
-    if (heroStats) statsObserver.observe(heroStats);
+    // Stats are now static values — no animation needed
 
     // === Scroll Reveal Animations ===
     const revealElements = document.querySelectorAll(
@@ -219,16 +183,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // === Parallax on Hero ===
     const heroContent = document.querySelector('.hero-content');
-    const scrollIndicator = document.querySelector('.scroll-indicator');
     window.addEventListener('scroll', () => {
         if (window.scrollY < window.innerHeight) {
             const progress = window.scrollY / window.innerHeight;
             if (heroContent) {
                 heroContent.style.transform = `translateY(${window.scrollY * 0.25}px)`;
                 heroContent.style.opacity = Math.max(0, 1 - progress * 1.5);
-            }
-            if (scrollIndicator) {
-                scrollIndicator.style.opacity = Math.max(0, 1 - progress * 4);
             }
         }
     });
@@ -326,6 +286,18 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // === FAQ Accordion ===
+    document.querySelectorAll('.faq-question').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const item = btn.parentElement;
+            const isOpen = item.classList.contains('active');
+            // Close all
+            document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
+            // Open clicked (if it wasn't already open)
+            if (!isOpen) item.classList.add('active');
+        });
+    });
 
     // === Active Nav Tracking ===
     const sections = document.querySelectorAll('section[id]');
